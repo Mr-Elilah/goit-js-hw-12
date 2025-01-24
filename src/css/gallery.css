@@ -83,3 +83,14 @@
 .sl-wrapper {
   background: linear-gradient(rgb(0 0 0 / 70%), rgb(4 4 4));
 }
+
+.load-more-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+}
+
+.load-more-btn.is-hidden {
+  display: none;
+}

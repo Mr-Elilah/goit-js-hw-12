@@ -7,15 +7,16 @@ import {
   hideLoadingIndicator,
 } from './js/render-functions.js';
 
-import { setPaginationButtons } from './js/custom.js';
 import { lightbox } from './js/lightbox-api.js';
 
 const searchForm = document.querySelector('.search-form');
 const searchInput = document.querySelector('.search-input');
+const loadMoreBtnEl = document.querySelector('.js-load-more-btn');
 
+let page = 1;
 searchForm.addEventListener('submit', onSearch);
 
-function onSearch(event) {
+async function onSearch(event) {
   event.preventDefault();
 
   const query = searchInput.value.trim();
@@ -28,28 +29,26 @@ function onSearch(event) {
   localStorage.clear();
 
   showLoadingIndicator();
+  try {
+    const { hits: images, totalHits } = await fetchImages(query, page);
+    hideLoadingIndicator();
 
-  fetchImages(query)
-    .then(({ hits: images, totalHits }) => {
-      hideLoadingIndicator();
-      if (images.length === 0) {
-        showErrorMessage(
-          'Sorry, there are no images matching your search query. Please try again!'
-        );
-        return;
-      }
+    if (images.length === 0) {
+      showErrorMessage(
+        'Sorry, there are no images matching your search query. Please try again!'
+      );
+      return;
+    }
 
-      renderGallery(images);
-      showSuccessMessage('Images loaded successfully!');
+    renderGallery(images);
+    showSuccessMessage('Images loaded successfully!');
 
-      lightbox.refresh();
-
-      setPaginationButtons(query, totalHits);
-    })
-    .catch(error => {
-      hideLoadingIndicator();
-      showErrorMessage('Oops, something went wrong. Please try again later.');
-    });
+    lightbox.refresh();
+    setPaginationButtons(query, totalHits);
+  } catch (error) {
+    hideLoadingIndicator();
+    showErrorMessage('Oops, something went wrong. Please try again later.');
+  }
 }
 
 // search-input box-shadow
