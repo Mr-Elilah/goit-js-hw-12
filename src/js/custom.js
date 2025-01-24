@@ -6,18 +6,18 @@ import {
   hideLoadingIndicator,
 } from './render-functions.js';
 
-import { BASE_URL, API_KEY } from './pixabay-api.js';
+import { lightbox } from './lightbox-api.js';
 
 let currentPage = 1;
 const itemsPerPage = 12;
 
 export function loadImagesForPage(query, page) {
-  const url = `${BASE_URL}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=${itemsPerPage}`;
+  console.log(query);
 
   showLoadingIndicator();
 
-  fetchImages(url)
-    .then(images => {
+  fetchImages(query, currentPage)
+    .then(({ hits: images, totalHits }) => {
       hideLoadingIndicator();
       if (images.length === 0) {
         showErrorMessage(
@@ -27,7 +27,7 @@ export function loadImagesForPage(query, page) {
       }
 
       renderGallery(images);
-
+      lightbox.refresh();
       const prevButton = document.querySelector('.prev');
       const nextButton = document.querySelector('.next');
 
@@ -45,13 +45,18 @@ export function loadImagesForPage(query, page) {
     })
     .catch(error => {
       hideLoadingIndicator();
+
       showErrorMessage('Oops, something went wrong. Please try again later.');
     });
 }
 
-export function setPaginationButtons(query) {
+export function setPaginationButtons(query, countImages) {
+  if (countImages <= itemsPerPage) {
+    return;
+  }
   const prevButton = document.querySelector('.prev');
   const nextButton = document.querySelector('.next');
+  nextButton.style.display = 'inline-block';
 
   prevButton.addEventListener('click', () => {
     if (currentPage > 1) {
@@ -65,4 +70,3 @@ export function setPaginationButtons(query) {
     loadImagesForPage(query, currentPage);
   });
 }
-// custom pagination

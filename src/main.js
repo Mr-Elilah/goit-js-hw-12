@@ -7,10 +7,8 @@ import {
   hideLoadingIndicator,
 } from './js/render-functions.js';
 
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
 import { setPaginationButtons } from './js/custom.js';
+import { lightbox } from './js/lightbox-api.js';
 
 const searchForm = document.querySelector('.search-form');
 const searchInput = document.querySelector('.search-input');
@@ -32,7 +30,7 @@ function onSearch(event) {
   showLoadingIndicator();
 
   fetchImages(query)
-    .then(images => {
+    .then(({ hits: images, totalHits }) => {
       hideLoadingIndicator();
       if (images.length === 0) {
         showErrorMessage(
@@ -44,13 +42,9 @@ function onSearch(event) {
       renderGallery(images);
       showSuccessMessage('Images loaded successfully!');
 
-      const lightbox = new SimpleLightbox('.gallery a', {
-        captionsData: 'alt',
-        captionDelay: 250,
-      });
       lightbox.refresh();
 
-      setPaginationButtons(query);
+      setPaginationButtons(query, totalHits);
     })
     .catch(error => {
       hideLoadingIndicator();
