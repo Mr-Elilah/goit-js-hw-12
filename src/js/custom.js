@@ -65,3 +65,4 @@ export function setPaginationButtons(query) {
     loadImagesForPage(query, currentPage);
   });
 }
+// custom pagination
