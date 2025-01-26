@@ -6,34 +6,46 @@ import {
   showLoadingIndicator,
   hideLoadingIndicator,
 } from './js/render-functions.js';
-
+import { loadImagesForPage } from './js/pagination.js';
 import { lightbox } from './js/lightbox-api.js';
-
-const searchForm = document.querySelector('.search-form');
-const searchInput = document.querySelector('.search-input');
-const loadMoreBtnEl = document.querySelector('.js-load-more-btn');
+import { inputHandler } from './js/input-handler.js';
+import {
+  gallery,
+  input,
+  loadMoreBtn,
+  searchForm,
+  searchInput,
+} from './js/refs.js';
 
 let page = 1;
+let query = '';
+
+loadMoreBtn.addEventListener('click', event => {
+  page += 1;
+  loadImagesForPage(query, page);
+});
+
 searchForm.addEventListener('submit', onSearch);
 
 async function onSearch(event) {
   event.preventDefault();
-
-  const query = searchInput.value.trim();
+  const form = event.currentTarget;
+  gallery.innerHTML = '';
+  query = searchInput.value.trim();
   if (query === '') {
     showErrorMessage('Please enter a search query.');
     return;
   }
 
-  input.value = '';
   localStorage.clear();
 
   showLoadingIndicator();
   try {
-    const { hits: images, totalHits } = await fetchImages(query, page);
+    const { hits: images } = await fetchImages(query, page);
     hideLoadingIndicator();
 
     if (images.length === 0) {
+      loadMoreBtn.classList.add('is-hidden');
       showErrorMessage(
         'Sorry, there are no images matching your search query. Please try again!'
       );
@@ -42,24 +54,16 @@ async function onSearch(event) {
 
     renderGallery(images);
     showSuccessMessage('Images loaded successfully!');
-
+    loadMoreBtn.classList.remove('is-hidden');
     lightbox.refresh();
-    setPaginationButtons(query, totalHits);
   } catch (error) {
     hideLoadingIndicator();
     showErrorMessage('Oops, something went wrong. Please try again later.');
+  } finally {
+    form.reset();
   }
 }
 
 // search-input box-shadow
-const input = document.querySelector('.search-input');
 
-input.addEventListener('input', () => {
-  if (input.value.trim() !== '') {
-    input.classList.remove('empty');
-    input.classList.add('filled');
-  } else {
-    input.classList.remove('filled');
-    input.classList.add('empty');
-  }
-});
+input.addEventListener('input', inputHandler);

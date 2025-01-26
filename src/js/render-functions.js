@@ -1,5 +1,6 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+import { gallery } from './refs';
 
 export function showErrorMessage(message) {
   iziToast.error({
@@ -16,7 +17,6 @@ export function showSuccessMessage(message) {
 }
 
 export function renderGallery(images) {
-  const gallery = document.querySelector('.gallery');
   const markup = images
     .map(
       ({
@@ -53,7 +53,7 @@ export function renderGallery(images) {
     )
     .join('');
 
-  gallery.innerHTML = markup;
+  gallery.insertAdjacentHTML('beforeend', markup);
 }
 
 export function showLoadingIndicator() {
