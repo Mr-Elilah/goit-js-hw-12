@@ -60,8 +60,10 @@
 }
 
 .load-more-btn {
-  position: absolute;
-  z-index: 1;
+  display: flex;
+  margin: 0 auto;
+  font-size: 18px;
+  padding: 8px 50px;
 }
 
 .load-more-btn.is-hidden {
