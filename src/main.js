@@ -36,7 +36,7 @@ async function onSearch(event) {
     showErrorMessage('Please enter a search query.');
     return;
   }
-
+  page = 1;
   localStorage.clear();
 
   showLoadingIndicator();

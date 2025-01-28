@@ -7,6 +7,8 @@ export async function fetchImages(query, page = 1) {
       params: {
         key: API_KEY,
         q: query,
+        image_type: 'photo',
+        orientation: 'horizontal',
         page,
         per_page: itemsPerPage,
       },
